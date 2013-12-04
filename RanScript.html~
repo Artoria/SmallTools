@@ -39,7 +39,6 @@
 	  switch(id){
 		  case "incNumber": a.value = (parseInt(a.value) + 1).toString(); break;
                   case "decNumber": a.value = (parseInt(a.value) - 1).toString(); break;
-             
 	}
 
 
