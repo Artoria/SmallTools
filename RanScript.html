@@ -25,12 +25,7 @@
 <script src="http://cdnjs.cloudflare.com/ajax/libs/coffee-script/1.6.3/coffee-script.min.js"></script>
 <script src="https://raw.github.com/imaya/zlib.js/master/bin/zlib_and_gzip.min.js"></script>
 <script src="http://backbonejs.org/backbone-min.js"></script>
-<script>
-  Object.prototype.instance_eval = function(f){
-    f.call(this);
-  }
-  
-  
+<script>  
   var click_handler = function(id){
 	  var a = $("#seiran_number");
 	  switch(id){
@@ -41,20 +36,10 @@
 
   }
 
-  window.onload = function(){
-    $.get('initlist', function(data){
-    	var v = data.split(/\n/);
-    	for(var i = 0 ; i < v.length; ++i)
-    		$("<script>").src(v[i]);
-    })
-    var button = $("input");
-    for(var i = 0; i < button.length; ++i){
-	    if( button[i].getAttribute("type")!="button" ) continue;
-	    button[i].addEventListener("click", function(){click_handler(this.id)});
-    }
-  }
-
-  
+  $(function(){
+    var baseurl = 'http://artoria.github.io/SmallTools/';
+    $.get(baseurl + 'initlist.html').done(function(data){console.log(data);});
+  })  
 </script>
 </head>
 
