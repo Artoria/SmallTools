@@ -32,10 +32,11 @@
     $.get(baseurl + 'initlist.html').done(function(data){ 
 	_.each(data.split('\n'), 
 		function(line){
-			$.get(line).done(function(data){window.eval(data);});
+			$(document.body).append($("<script></script>").attr("src", line))
 		}
 	);
     })  
+    $(function(){});
   })
 //-->
 </script>
