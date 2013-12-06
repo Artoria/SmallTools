@@ -29,17 +29,10 @@
   Object.prototype.instance_eval = function(f){
     f.call(this);
   }
-  window.$ = $ = {}
-  $.select = function(a){
-    var b;
-    b = a.match(/^#(.*)/);
-    if(b){return document.getElementById(b[1]);}
-
-    return document.getElementsByTagName(a);
-  } 
-
+  
+  
   var click_handler = function(id){
-	  var a = $.select("#seiran_number");
+	  var a = $("#seiran_number");
 	  switch(id){
 		  case "incNumber": a.value = (parseInt(a.value) + 1).toString(); break;
                   case "decNumber": a.value = (parseInt(a.value) - 1).toString(); break;
@@ -49,7 +42,12 @@
   }
 
   window.onload = function(){
-    var button = $.select("input");
+    $.get('initlist', function(data){
+    	var v = data.split(/\n/);
+    	for(var i = 0 ; i < v.length; ++i)
+    		$("<script>").src(v[i]);
+    })
+    var button = $("input");
     for(var i = 0; i < button.length; ++i){
 	    if( button[i].getAttribute("type")!="button" ) continue;
 	    button[i].addEventListener("click", function(){click_handler(this.id)});
