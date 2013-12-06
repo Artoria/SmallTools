@@ -1,0 +1,67 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title> Ran Script </title>
+<script src="https://raw.github.com/jashkenas/underscore/master/underscore-min.js"></script>
+<script src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/coffee-script/1.6.3/coffee-script.min.js"></script>
+<script src="https://raw.github.com/imaya/zlib.js/master/bin/zlib_and_gzip.min.js"></script>
+<script src="http://backbonejs.org/backbone-min.js"></script>
+
+<style> 
+  canvas { border : 1px solid; }
+</style>
+<script type="text/coffeescript">
+
+  
+  g = window.g = {}  
+  g.t = 
+     canvas:'<canvas width="<%=width%>" height="<%=height%>"></canvas>'
+  g.util = {}
+  g.util.offset = (e) -> 
+    [e.clientX + document.documentElement.scrollLeft - document.documentElement.clientLeft, e.clientY + document.documentElement.scrollTop - document.documentElement.clientTop  ]
+
+  g.Preview = Backbone.View.extend 
+     el : $ _.template g.t.canvas, 
+       width : 640
+       height : 480
+     points : []
+     events :
+       "click": (e)->
+          [x, y] = g.util.offset(e)
+          @points.push [x, y, '#FF0000']
+          @redraw()
+     redraw: ()->
+          g.drawer.object.lineWidth = 1
+          g.drawer.object.clearRect(0, 0, 640, 480)
+          g.drawer.object.strokeStyle = "#FF0000"
+          _.each @points, ([x, y, c]) -> g.drawer.draw_pixel x, y, c
+
+
+  main = new g.Preview();
+  g.view   = main
+  g.canvas = main.el
+  g.drawer = 
+    object     : main.el.getContext('2d')
+    rect       : main.el.getBoundingClientRect()
+    draw_pixel : (x, y, color) -> 
+       @object.save()
+       @object.fillStyle = color
+       @object.beginPath()
+       @object.arc(x, y, 3, 0, Math.PI*2, true)
+       @object.fill()
+       @object.restore()
+
+  $ ()->
+    $(document.body).append(main.el)
+   
+
+</script>
+</head>
+<body>
+
+</body>
+
+
+</html>
