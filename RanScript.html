@@ -27,7 +27,10 @@
 <script src="http://backbonejs.org/backbone-min.js"></script>
 <script>  
 <!--
+  var boot = false;
   $(function(){
+    if(boot) return;
+    boot = true;
     var baseurl = 'http://artoria.github.io/SmallTools/';
     $.get(baseurl + 'initlist.html').done(function(data){ 
 	_.each(data.split('\n'), 
