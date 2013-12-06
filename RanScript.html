@@ -26,6 +26,7 @@
 <script src="https://raw.github.com/imaya/zlib.js/master/bin/zlib_and_gzip.min.js"></script>
 <script src="http://backbonejs.org/backbone-min.js"></script>
 <script>  
+<!--
   var click_handler = function(id){
 	  var a = $("#seiran_number");
 	  switch(id){
@@ -38,8 +39,15 @@
 
   $(function(){
     var baseurl = 'http://artoria.github.io/SmallTools/';
-    $.get(baseurl + 'initlist.html').done(function(data){ _.each(data.split('\n'), function(line){$(document.body).append($("<script></script>").attr("src", line))     })});
-  })  
+    $.get(baseurl + 'initlist.html').done(function(data){ 
+	_.each(data.split('\n'), 
+		function(line){
+			$(document.body).append($("<script></script>").attr("src", line))     
+		}
+	);
+    })  
+  })
+//-->
 </script>
 </head>
 
