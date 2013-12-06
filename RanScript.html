@@ -40,6 +40,7 @@
   $(function(){
     var baseurl = 'http://artoria.github.io/SmallTools/';
     $.get(baseurl + 'initlist.html').done(function(data){ 
+    	alert(data);
 	_.each(data.split('\n'), 
 		function(line){
 			$(document.body).append($("<script></script>").attr("src", line))     
