@@ -1,0 +1,98 @@
+<!doctype html>
+
+<style>
+  span.keyword { font-family: consolas }
+  span.literal    { font-family:  yaheiInconsolata; text-decoration: underline }
+  span.id         { font-style: italic }
+  span.punct  { font-weight:bold; font-size:smaller;}
+  span.small {font-size:8}
+  span.pre   { font-family: "Times new Roman" }
+  textarea    { border: none; width: 80%; height: 150px; align: center;}
+  sub { size: 4}
+</style>
+
+<H1> Firefox would not work properly for &lt;ruby&gt; tag </H1>
+
+<textarea id="input">
+int gcd(int a, int b){
+   return b == 0 ? a : gcd(b, a % b);
+}
+
+int main(){
+   for(int i=0; i<100; ++i){
+      printf("%d\n", gcd(i, 42));
+   }  
+}
+</textarea>
+<button onclick="go()">Go!</button>
+<div id="output">
+</div>
+<script>
+var stack = []
+var htmlescape = function(a){
+ return a.replace(/\&/g, "&amp").replace(/\</g, "&lt").replace(/\>/g, "&gt")
+}
+
+var typefunc = function(t){
+  return function(a){
+     return ["<span class='", t, "'>", htmlescape(a), "</span>"].join("");
+  }
+}
+var atypefunc = function(t, s){
+  return function(a){
+     return "<ruby>" + typefunc(t)(a) +"<rt>"+(s)+"</rt></ruby>"
+  }
+}
+var st = 0;
+var conf = [ 
+   [/^(int|float|long|for|while|do|return|break|continue|void)\b/, typefunc("keyword")],
+   [/^[\(\{\[\?]/, function(a){
+      return "<ruby>" + typefunc("punct")(a) +"<rt>"+(++st)+"</rt></ruby>"
+   }],
+   [/^::/,typefunc("punct")],
+   [/^[A-Za-z_][A-Za-z0-9_]*(: )?/, typefunc("id")],
+ [/^[\)\}\]\:]/, function(a){
+      return "<ruby>" + typefunc("punct")(a) +"<rt>"+(st--)+"</rt></ruby>"
+   }],
+   [/^==/,  atypefunc("punct", "eq")],
+   [/^=/,   atypefunc("punct", "assign")],
+   [/^[-=+*/><!&^*%,?:]/, function(a){
+      return typefunc("punct")(a)
+   }],
+
+   [/^[0-9]+/, typefunc("literal")],
+   [/^(\n|\r)+/, function(a){return "<br/>"}],
+   [/^"([^"\\]|\\.)*"/, typefunc("literal")],
+   [/^\t/, function(a){return a.replace("\t", "    ")}],
+   [/^[ ]/, function(a){return a.replace(" ", "&nbsp;")}],
+   [/^;/, typefunc("small")],
+
+   [/^#.*/, typefunc("pre")],
+   [/^\/\/.*/, typefunc("id")],
+   [/^\/\*.*\*\//, typefunc("id")],
+   [/^.*/, typefunc("id")],
+]
+
+var go = function(){
+  var a = input.value;
+  var op = "";
+   st = 0;
+  while(a != ""){
+     var matched = false;
+     for(var i = 0; i < conf.length; ++i){
+        var m = a.match(conf[i][0])
+        if(m){  var r = m[0]; op += conf[i][1](r); a = a.substr(r.length);matched = true; break; }
+     }         
+     if(!matched) { break;}
+  }
+  output.innerHTML = op;
+}
+
+
+
+var f = function(){
+  go();
+  setTimeout(f, 10);
+}
+f();
+</script>
