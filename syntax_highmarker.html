@@ -1,5 +1,5 @@
 <!doctype html>
-
+<script src="http://cdnjs.cloudflare.com/ajax/libs/store.js/1.3.14/store.min.js"></script>
 <style>
   span.keyword { font-family: consolas }
   span.literal { font-family:  yaheiInconsolata; text-decoration: underline }
@@ -97,11 +97,17 @@ var go = function(){
   output.innerHTML = op;
 }
 
-
+var s;
+if(s = store.get("script")){
+    input.value = s;
+}
 
 var f = function(){
   go();
+  store.set("script", input.value);
   setTimeout(f, 10);
 }
 f();
+
+
 </script>
