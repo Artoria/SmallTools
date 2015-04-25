@@ -43,25 +43,33 @@ var atypefunc = function(t, s){
      return "<ruby>" + typefunc(t)(a) +"<rt>"+(s)+"</rt></ruby>"
   }
 }
-var st = 0;
+var stack = [];
+var accmutive = "";
 var conf = [ 
-   [/^(int|float|long|for|while|do|return|break|continue|void)\b/, typefunc("keyword")],
-   [/^[\(\{\[\?]/, function(a){
-      return "<ruby>" + typefunc("punct")(a) +"<rt>"+(++st)+"</rt></ruby>"
+   [/^(int|float|long|for|while|do|return|break|continue|void|typedef)\b/, typefunc("keyword")],
+   [/^([A-Za-z_][A-Za-z0-9_]*)*[\(\{\[\?]/, function(a){
+      stack.push({text:a.substr(0, a.length-1), acc: accumutive})
+      return "<ruby>" + typefunc("punct")(a) +"<rt>"+(stack.length-1)+"</rt></ruby>"
    }],
    [/^::/,typefunc("punct")],
    [/^[A-Za-z_][A-Za-z0-9_]*(: )?/, typefunc("id")],
  [/^[\)\}\]\:]/, function(a){
-      return "<ruby>" + typefunc("punct")(a) +"<rt>"+(st--)+"</rt></ruby>"
+      var q = stack[stack.length-1];
+      stack.pop();
+      if(a != "}"){
+	      return "<ruby>" + typefunc("punct")(a) +"<rt>"+(q["text"] == "" ? stack.length : q["text"])+"</rt></ruby>"  
+      }else{
+	      return "<ruby>" + typefunc("punct")(a) +"<rt>"+(q["acc"] == "" ? stack.length : (q["acc"].match(/^[^(]+/)[0] || ""))+"</rt></ruby>"  
+      }
    }],
    [/^==/,  atypefunc("punct", "eq")],
    [/^=/,   atypefunc("punct", "assign")],
    [/^[-=+*/><!&^*%,?:]/, function(a){
       return typefunc("punct")(a)
    }],
-
+   
    [/^[0-9]+/, typefunc("literal")],
-   [/^(\n|\r)+/, function(a){return "<br/>"}],
+   [/^(\n|\r)+/, function(a){accumutive = ""; return "<br/>"}],
    [/^"([^"\\]|\\.)*"/, typefunc("literal")],
    [/^\t/, function(a){return a.replace("\t", "    ")}],
    [/^[ ]/, function(a){return a.replace(" ", "&nbsp;")}],
@@ -76,12 +84,13 @@ var conf = [
 var go = function(){
   var a = input.value;
   var op = "";
-   st = 0;
+  stack = []
+  accumutive = "";
   while(a != ""){
      var matched = false;
      for(var i = 0; i < conf.length; ++i){
         var m = a.match(conf[i][0])
-        if(m){  var r = m[0]; op += conf[i][1](r); a = a.substr(r.length);matched = true; break; }
+        if(m){  var r = m[0]; var p = conf[i][1](r); op += p; accumutive += r; a = a.substr(r.length);matched = true; break; }
      }         
      if(!matched) { break;}
   }
